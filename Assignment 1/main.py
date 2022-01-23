@@ -1,5 +1,6 @@
 from importlib.resources import path
 import re
+import random as rd
 
 def tokenize(str):
     str = str.strip()
@@ -11,7 +12,7 @@ def remove_patterns(str):
 
 def get_stopwords():
     stopwords = []
-    with open("Data/Stopwords.txt") as f:
+    with open("Assignment 1/data/Stopwords.txt") as f:
         for line in f:
             line = re.sub(r'\n',r' ', line)
             stopwords.append(line)
@@ -21,7 +22,7 @@ def get_stopwords():
 if __name__=="__main__":
     tokenized_file = []
     word_count = {}
-    with open("Data/neg.txt", "r") as f:
+    with open("Assignment 1/data/neg.txt", "r") as f:
         content = f.read()
         processed_line = remove_patterns(content)
         words = tokenize(processed_line)
