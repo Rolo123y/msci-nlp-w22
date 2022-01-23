@@ -39,4 +39,4 @@ if __name__=="__main__":
     # for k ,v in word_count.items():
         # print(f'{k} -> {v}')
 
-    # print(len(word_count.keys())
+    print(len(word_count.keys()))
