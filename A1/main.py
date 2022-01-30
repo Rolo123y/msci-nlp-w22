@@ -2,24 +2,31 @@ import re
 import sys
 import time
 import random as rd
+import csv
+import os.path
 
 def write_outto_csv(Path, filename, data):
     fullPath = Path + "\\" + filename
-    with open(fullPath, "w") as f:
-        f.write(data)
-    f.close()
-    print(f'Created file named {filename} located {fullPath}')
+    if os.path.isfile(fullPath) == True:
+        print(f'file already exists in {fullPath}. Please delete it and try again!')
+        return -1
+    else:
+        with open(fullPath, "w", newline='') as f:
+            write = csv.writer(f,quoting=csv.QUOTE_ALL)
+            write.writerows(data)
+        f.close()
+        print(f'\tCreated file named {filename} located {fullPath}')
     return 1
 
 def tokenize(processed_list_of_Sentences):
     words = []
     for i in range(len(processed_list_of_Sentences)):
-        words.append(re.split("\s+", processed_list_of_Sentences[i])) 
+        words.append(re.split('\s+', processed_list_of_Sentences[i]))
     return words
 
 def get_stopwords(PathToData):
     stopwords = []
-    PathToStopwords = (PathToData + "\\Stopwords.txt").strip()
+    PathToStopwords = (PathToData + "\\stopwords.txt").strip()
     with open(PathToStopwords) as f:
         for line in f:
             line = re.sub(r'\n', '', line)
@@ -106,31 +113,42 @@ def main(PathToData):
     vocabulary_WO_Stopwords = Processed_File[3]
     print(f'SENTENCES WITH STOPWORDS len: {len(tokenized_Sentences_W_Stopwords)}\nSENTENCES WITHOUT STOPWORDS: {len(tokenized_Sentences_WO_Stopwords)}\nVOCAB WITH STOPWORDS len: {len(vocabulary_W_Stopwords)}\nVOCAB WITHOUT STOPWORDS len: {len(vocabulary_WO_Stopwords)}')
     
-    print("Creating output files ...")
+    print("Please wait while the program creates the output files ...")
     OutData_W_Stopwords = {}
     TrainData_W_Stopwords = {}
     ValidData_W_Stopwords = {}
     TestData_W_Stopwords = {}
+
     OutData_WO_Stopwords = {}
     TrainData_WO_Stopwords = {}
     ValidData_WO_Stopwords = {}
     TestData_WO_Stopwords = {}
 
-    # Split the data into train, val, test with and without stopwords and assign to above variables
-    # I have a big list of tokenized sentences
-    #   - shuffle the sentences using random.shuffle
-    #   - randomly grab 80% of the shuffled list as training set
-    #   - the other 20% as testing set
-    #   - 
+    train_ratio = 0.80
+    validation_ratio = 0.10 # test is also 10%
 
-    # write_outto_csv(PathToData , "\\out.csv", OutData_W_Stopwords)
-    # write_outto_csv(PathToData , "\\train.csv", TrainData_W_Stopwords)
-    # write_outto_csv(PathToData , "\\val.csv", ValidData_W_Stopwords)
-    # write_outto_csv(PathToData , "\\test.csv", TestData_W_Stopwords)
-    # write_outto_csv(PathToData , "\\out_ns.csv", OutData_WO_Stopwords)
-    # write_outto_csv(PathToData , "\\train_ns.csv", TrainData_WO_Stopwords)
-    # write_outto_csv(PathToData , "\\val_ns.csv", ValidData_WO_Stopwords)
-    # write_outto_csv(PathToData , "\\test_ns.csv", TestData_WO_Stopwords)
+    rd.shuffle(tokenized_Sentences_W_Stopwords)
+    OutData_W_Stopwords = tokenized_Sentences_W_Stopwords
+    TrainData_W_Stopwords = tokenized_Sentences_W_Stopwords[:int((len(tokenized_Sentences_W_Stopwords)+1)*train_ratio)]
+    ValidData_W_Stopwords = tokenized_Sentences_W_Stopwords[int((len(tokenized_Sentences_W_Stopwords)+1)*train_ratio):int((len(tokenized_Sentences_W_Stopwords)+1)*(train_ratio+validation_ratio))]
+    TestData_W_Stopwords = tokenized_Sentences_W_Stopwords[int((len(tokenized_Sentences_W_Stopwords)+1)*(train_ratio+validation_ratio)):]
+
+    rd.shuffle(tokenized_Sentences_WO_Stopwords)
+    OutData_WO_Stopwords = tokenized_Sentences_WO_Stopwords
+    TrainData_WO_Stopwords = tokenized_Sentences_WO_Stopwords[:int((len(tokenized_Sentences_WO_Stopwords)+1)*train_ratio)]
+    ValidData_WO_Stopwords = tokenized_Sentences_WO_Stopwords[int((len(tokenized_Sentences_WO_Stopwords)+1)*train_ratio):int((len(tokenized_Sentences_WO_Stopwords)+1)*(train_ratio+validation_ratio))]
+    TestData_WO_Stopwords = tokenized_Sentences_WO_Stopwords[int((len(tokenized_Sentences_WO_Stopwords)+1)*(train_ratio+validation_ratio)):]
+
+    # print(f'\n{len(OutData_W_Stopwords)}\n{len(TrainData_W_Stopwords)}\n{len(ValidData_W_Stopwords)}\n{len(TestData_W_Stopwords)}\n{len(OutData_WO_Stopwords)}\n{len(TrainData_WO_Stopwords)}\n{len(ValidData_WO_Stopwords)}\n{len(TestData_WO_Stopwords)}\n')
+
+    write_outto_csv(PathToData , "\\out.csv", OutData_W_Stopwords)
+    write_outto_csv(PathToData , "\\train.csv", TrainData_W_Stopwords)
+    write_outto_csv(PathToData , "\\val.csv", ValidData_W_Stopwords)
+    write_outto_csv(PathToData , "\\test.csv", TestData_W_Stopwords)
+    write_outto_csv(PathToData , "\\out_ns.csv", OutData_WO_Stopwords)
+    write_outto_csv(PathToData , "\\train_ns.csv", TrainData_WO_Stopwords)
+    write_outto_csv(PathToData , "\\val_ns.csv", ValidData_WO_Stopwords)
+    write_outto_csv(PathToData , "\\test_ns.csv", TestData_WO_Stopwords)
 
 if __name__=="__main__":
     if len(sys.argv) < 2:
