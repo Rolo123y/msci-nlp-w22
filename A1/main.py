@@ -158,4 +158,3 @@ if __name__=="__main__":
         start_time = time.time()
         main(sys.argv[1])
         print("--- %s seconds ---" % (time.time() - start_time))
-    # py .\A1\main.py C:\\Users\\Ruhol\\Desktop\\4BWinter2022\\MSCI598\\msci-nlp-w22\\A1\\data
