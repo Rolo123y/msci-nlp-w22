@@ -13,7 +13,8 @@ def write_outto_csv(Path, filename, data):
     else:
         with open(fullPath, "w", newline='') as f:
             write = csv.writer(f,quoting=csv.QUOTE_ALL)
-            write.writerow(data)
+            for item in data:
+                write.writerow(item)
         f.close()
         print(f'\tCreated file named {filename} located {fullPath}')
     return 1
