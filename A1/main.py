@@ -13,7 +13,7 @@ def write_outto_csv(Path, filename, data):
     else:
         with open(fullPath, "w", newline='') as f:
             write = csv.writer(f,quoting=csv.QUOTE_ALL)
-            write.writerows(data)
+            write.writerow(data)
         f.close()
         print(f'\tCreated file named {filename} located {fullPath}')
     return 1
@@ -103,7 +103,7 @@ def main(PathToData):
     tokenized_Sentences_WO_Stopwords = Processed_File[1]
     vocabulary_W_Stopwords = Processed_File[2]
     vocabulary_WO_Stopwords = Processed_File[3]
-    print(f'SENTENCES WITH STOPWORDS len: {len(tokenized_Sentences_W_Stopwords)}\nSENTENCES WITHOUT STOPWORDS: {len(tokenized_Sentences_WO_Stopwords)}\nVOCAB WITH STOPWORDS len: {len(vocabulary_W_Stopwords)}\nVOCAB WITHOUT STOPWORDS len: {len(vocabulary_WO_Stopwords)}\n\n')
+    print(f'SENTENCES WITH STOPWORDS len: {len(tokenized_Sentences_W_Stopwords)}\nSENTENCES WITHOUT STOPWORDS: {len(tokenized_Sentences_WO_Stopwords)}\nVOCAB WITH STOPWORDS len: {len(vocabulary_W_Stopwords)}\nVOCAB WITHOUT STOPWORDS len: {len(vocabulary_WO_Stopwords)}\n')
 
     print("Processing pos.txt ....")
     Processed_File = Iterate_File(PathToData, PathToPos, tokenized_Sentences_W_Stopwords, tokenized_Sentences_WO_Stopwords, vocabulary_W_Stopwords, vocabulary_WO_Stopwords)
@@ -157,4 +157,4 @@ if __name__=="__main__":
     else:
         start_time = time.time()
         main(sys.argv[1])
-        print("--- %s seconds ---" % (time.time() - start_time))
+        print("COMPLETED IN --- %s seconds ---" % (time.time() - start_time))
