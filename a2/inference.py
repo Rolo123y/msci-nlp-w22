@@ -1,15 +1,30 @@
+import os
 import pickle
 import sys
 import time
-import re
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+nltk.download('punkt')
+nltk.download('stopwords')
+
+p = os.path.abspath('.')
+sys.path.insert(1, p)
+
+import a1.main as m1
 
 def read_txtfile(txtfile):
     with open(txtfile, 'r') as f:
         content = f.readlines()
     f.close()
 
-    for i in range(len(content)):
-        content[i] = re.sub(r'\n','', content[i])
+    content = m1.remove_patterns(content)
+    
+    return content
+
+def process_list(listOfsentences):
+
+    content = m1.remove_patterns(listOfsentences)
     
     return content
 
@@ -42,65 +57,69 @@ def evaluate(listOfsentences, vectorizer, tdidf_transformer, classifier):
     return classifier.predict(tranformed_matrix)
 
 def run(txtfile, classifier_type):
-    listOfsentences = read_txtfile(txtfile)
+    Original_listOfsentences = read_txtfile(txtfile)
+    listOfsentences_W_Stopwords = process_list(Original_listOfsentences)
+    tokenized_sents = [word_tokenize(i) for i in listOfsentences_W_Stopwords]
+    tokens_without_sw = m1.remove_Stopwords(tokenized_sents, stopwords.words())
+    listOfsentences_WO_Stopwords = [(" ").join(sentence) for sentence in tokens_without_sw]
     
     if classifier_type == "mnb_uni":        
         vectorizer = read_vectorizer(classifier_type)
         tdidf_transformer = read_tfidfTransformer(classifier_type)
         classifier = read_Classifier(classifier_type)
-        prediction = evaluate(listOfsentences, vectorizer,tdidf_transformer, classifier)
+        prediction = evaluate(listOfsentences_W_Stopwords, vectorizer,tdidf_transformer, classifier)
 
-        for i in range(len(listOfsentences)):
-            print(f"{listOfsentences[i]:150s} {prediction[i]:>3}")
+        for i in range(len(Original_listOfsentences)):
+            print(f"{Original_listOfsentences[i]:150s} {prediction[i]:>3}")
         return 1
     elif classifier_type == "mnb_bi":
         vectorizer = read_vectorizer(classifier_type)
         tdidf_transformer = read_tfidfTransformer(classifier_type)
         classifier = read_Classifier(classifier_type)
-        prediction = evaluate(listOfsentences, vectorizer,tdidf_transformer, classifier)
+        prediction = evaluate(listOfsentences_W_Stopwords, vectorizer,tdidf_transformer, classifier)
 
-        for i in range(len(listOfsentences)):
-            print(f"{listOfsentences[i]:150s} {prediction[i]:>3}")
+        for i in range(len(Original_listOfsentences)):
+            print(f"{Original_listOfsentences[i]:150s} {prediction[i]:>3}")
 
         return 1
     elif classifier_type == "mnb_uni_bi":
         vectorizer = read_vectorizer(classifier_type)
         tdidf_transformer = read_tfidfTransformer(classifier_type)
         classifier = read_Classifier(classifier_type)
-        prediction = evaluate(listOfsentences, vectorizer,tdidf_transformer, classifier)
+        prediction = evaluate(listOfsentences_W_Stopwords, vectorizer,tdidf_transformer, classifier)
 
-        for i in range(len(listOfsentences)):
-            print(f"{listOfsentences[i]:150s} {prediction[i]:>3}")
+        for i in range(len(Original_listOfsentences)):
+            print(f"{Original_listOfsentences[i]:150s} {prediction[i]:>3}")
 
         return 1
     elif classifier_type == "mnb_uni_ns":
         vectorizer = read_vectorizer(classifier_type)
         tdidf_transformer = read_tfidfTransformer(classifier_type)
         classifier = read_Classifier(classifier_type)
-        prediction = evaluate(listOfsentences, vectorizer,tdidf_transformer, classifier)
+        prediction = evaluate(listOfsentences_WO_Stopwords, vectorizer,tdidf_transformer, classifier)
 
-        for i in range(len(listOfsentences)):
-            print(f"{listOfsentences[i]:150s} {prediction[i]:>3}")
+        for i in range(len(Original_listOfsentences)):
+            print(f"{Original_listOfsentences[i]:150s} {prediction[i]:>3}")
 
         return 1
     elif classifier_type == "mnb_bi_ns":
         vectorizer = read_vectorizer(classifier_type)
         tdidf_transformer = read_tfidfTransformer(classifier_type)
         classifier = read_Classifier(classifier_type)
-        prediction = evaluate(listOfsentences, vectorizer,tdidf_transformer, classifier)
+        prediction = evaluate(listOfsentences_WO_Stopwords, vectorizer,tdidf_transformer, classifier)
 
-        for i in range(len(listOfsentences)):
-            print(f"{listOfsentences[i]:150s} {prediction[i]:>3}")
+        for i in range(len(Original_listOfsentences)):
+            print(f"{Original_listOfsentences[i]:150s} {prediction[i]:>3}")
 
         return 1
     elif classifier_type == "mnb_uni_bi_ns":
         vectorizer = read_vectorizer(classifier_type)
         tdidf_transformer = read_tfidfTransformer(classifier_type)
         classifier = read_Classifier(classifier_type)
-        prediction = evaluate(listOfsentences, vectorizer,tdidf_transformer, classifier)
+        prediction = evaluate(listOfsentences_WO_Stopwords, vectorizer,tdidf_transformer, classifier)
 
-        for i in range(len(listOfsentences)):
-            print(f"{listOfsentences[i]:150s} {prediction[i]:>3}")
+        for i in range(len(Original_listOfsentences)):
+            print(f"{Original_listOfsentences[i]:150s} {prediction[i]:>3}")
 
         return 1
     else:
@@ -114,5 +133,5 @@ if __name__=="__main__":
     else:
         start_time = time.time()
         run(sys.argv[1], sys.argv[2])
-        print("COMPLETED IN --- %s seconds ---" % (time.time() - start_time))
+        print("\nCOMPLETED IN --- %s seconds ---" % (time.time() - start_time))
 # py .\a2\inference.py C:\\Users\\Ruhol\\Desktop\\4BWinter2022\\MSCI598\\msci-nlp-w22\\a2\\data\\someSentences.txt mnb_uni
