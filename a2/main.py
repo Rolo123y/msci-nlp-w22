@@ -191,9 +191,22 @@ def main(Path):
 
     # Validate the classifiers WITHOUT Stopwords and find good alpha values for each MultinomialNB
     print("VALIDATING ON DATASET WITHOUT STOPWORDS")
-    Unigram_WOStop_Val, classifier_WStop_unigram, vectorizer_WStop_unigram, Tfidf_T_WStop_unigram = prediction(classifier_WOStop_unigram, vectorizer_WOStop_unigram, Tfidf_T_WOStop_unigram, yval, val_labels)
-    bigram_WOStop_Val, classifier_WStop_bigram, vectorizer_WStop_bigram, Tfidf_T_WStop_bigram = prediction(classifier_WOStop_bigram, vectorizer_WOStop_bigram, Tfidf_T_WOStop_bigram, yval, val_labels)
-    unigramANDbigram_WOStop_Val, classifier_WStop_unigramANDbigram, vectorizer_WStop_unigramANDbigram, Tfidf_T_WStop_unigramANDbigram = prediction(classifier_WOStop_unigramANDbigram, vectorizer_WOStop_unigramANDbigram, Tfidf_T_WOStop_unigramANDbigram, yval, val_labels)
+    Unigram_WOStop_Val, classifier_WOStop_unigram, vectorizer_WOStop_unigram, Tfidf_T_WOStop_unigram = prediction(classifier_WOStop_unigram, vectorizer_WOStop_unigram, Tfidf_T_WOStop_unigram, yval, val_labels)
+    bigram_WOStop_Val, classifier_WOStop_bigram, vectorizer_WOStop_bigram, Tfidf_T_WOStop_bigram = prediction(classifier_WOStop_bigram, vectorizer_WOStop_bigram, Tfidf_T_WOStop_bigram, yval, val_labels)
+    unigramANDbigram_WOStop_Val, classifier_WOStop_unigramANDbigram, vectorizer_WOStop_unigramANDbigram, Tfidf_T_WOStop_unigramANDbigram = prediction(classifier_WOStop_unigramANDbigram, vectorizer_WOStop_unigramANDbigram, Tfidf_T_WOStop_unigramANDbigram, yval, val_labels)
+    
+    print("TESTING ON TEST SET WITH STOPWORDS")
+    Unigram_WStop_test, classifier_WStop_unigram, vectorizer_WStop_unigram, Tfidf_T_WStop_unigram = prediction(classifier_WStop_unigram, vectorizer_WStop_unigram, Tfidf_T_WStop_unigram, xtest, test_labels)
+    bigram_WStop_test, classifier_WStop_bigram, vectorizer_WStop_bigram, Tfidf_T_WStop_bigram = prediction(classifier_WStop_bigram, vectorizer_WStop_bigram, Tfidf_T_WStop_bigram,xtest, test_labels)
+    unigramANDbigram_WStop_test, classifier_WStop_unigramANDbigram, vectorizer_WStop_unigramANDbigram, Tfidf_T_WStop_unigramANDbigram = prediction(classifier_WStop_unigramANDbigram, vectorizer_WStop_unigramANDbigram, Tfidf_T_WStop_unigramANDbigram, xtest, test_labels)
+
+    print("TESTING ON TEST SET WITHOUT STOPWORDS")
+    Unigram_WOStop_test, classifier_WOStop_unigram, vectorizer_WOStop_unigram, Tfidf_T_WOStop_unigram = prediction(classifier_WOStop_unigram, vectorizer_WOStop_unigram, Tfidf_T_WOStop_unigram, ytest, test_labels)
+    bigram_WOStop_test, classifier_WOStop_bigram, vectorizer_WOStop_bigram, Tfidf_T_WOStop_bigram = prediction(classifier_WOStop_bigram, vectorizer_WOStop_bigram, Tfidf_T_WOStop_bigram, ytest, test_labels)
+    unigramANDbigram_WOStop_test, classifier_WOStop_unigramANDbigram, vectorizer_WOStop_unigramANDbigram, Tfidf_T_WOStop_unigramANDbigram = prediction(classifier_WOStop_unigramANDbigram, vectorizer_WOStop_unigramANDbigram, Tfidf_T_WOStop_unigramANDbigram, ytest, test_labels)
+    
+    print(f'\nUnigram_WStop_test {Unigram_WStop_test}\nbigram_WStop_test {bigram_WStop_test}\nunigramANDbigram_WStop_test {unigramANDbigram_WStop_test}')
+    print(f'Unigram_WOStop_test {Unigram_WOStop_test}\nbigram_WOStop_test {bigram_WOStop_test}\nunigramANDbigram_WOStop_test {unigramANDbigram_WOStop_test}')
 
     print("\nPlease wait while the program creates the output files ...")
     write_outto_pkl("a2\\data\\" , "mnb_uni.pkl", classifier_WStop_unigram, vectorizer_WStop_unigram, Tfidf_T_WStop_unigram)
