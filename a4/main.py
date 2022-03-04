@@ -9,7 +9,7 @@ import tensorflow as tf
 import numpy as np
 from sklearn.model_selection import train_test_split
 from keras.models import Sequential
-from keras.layers import Input, Dense, Embedding, Dropout, GlobalAveragePooling1D
+from keras.layers import Input, Dense, Embedding, Dropout, GlobalAveragePooling1D, BatchNormalization
 from keras.preprocessing.text import text_to_word_sequence, Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras import regularizers, optimizers
@@ -79,9 +79,10 @@ def get_w2vmodel():
     return wv
 
 
-def pre_process(df_sentence, MAX_VOCAB_SIZE, MAX_SENT_LEN):
-    df_sentence = df_sentence.sample(frac=1, random_state=10)
+def pre_process(df, MAX_VOCAB_SIZE, MAX_SENT_LEN):
+    df_sentence = df.sample(frac=1, random_state=10)
     df_sentence.reset_index(inplace=True, drop=True)
+    df_sentence.dropna()
 
     word_seq = [text_to_word_sequence(sent)
                 for sent in df_sentence['sentence']]
@@ -126,10 +127,10 @@ def build_model(ACTIVATION, embeddings_matrix, X_train_tokenizer, X_train, X_tra
 
     # Hidden Layer
     x_train_model.add(
-        Dense(ACTIVATION_DIM, activation=ACTIVATION, name=ACTIVATION+'_layer',
-              kernel_regularizer=regularizers.l2(0.0001)))
+        Dense(50, activation='relu', name=ACTIVATION+'_layer',
+              kernel_regularizer=regularizers.l2(0.001)))
 
-    x_train_model.add(Dropout(rate=0.5, name='dropout_1'))
+    x_train_model.add(Dropout(rate=0.1, name='dropout_1'))
 
     # Output Layer
     x_train_model.add(
@@ -137,10 +138,8 @@ def build_model(ACTIVATION, embeddings_matrix, X_train_tokenizer, X_train, X_tra
 
     optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001)
     x_train_model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
-                          optimizer=optimizer,
+                          optimizer='adam',
                           metrics=['accuracy'])
-
-    # print(x_train_model_sigmoid.summary())
 
     x_train_model.fit(X_train, X_train_polarity,
                       batch_size=BATCH_SIZE,
@@ -154,12 +153,12 @@ def build_model(ACTIVATION, embeddings_matrix, X_train_tokenizer, X_train, X_tra
 def main(Path_To_data):
 
     # These are some hyperparameters that can be tuned
-    MAX_SENT_LEN = 30
-    BATCH_SIZE = 200
-    N_EPOCHS = 15
+    MAX_SENT_LEN = 40
+    BATCH_SIZE = 500
+    N_EPOCHS = 10
     MAX_VOCAB_SIZE = 20000
     EMBEDDING_DIM = 100
-    RELU_DIM = MAX_SENT_LEN
+    RELU_DIM = MAX_SENT_LEN+2
     SIGMOID_DIM = MAX_SENT_LEN
     TANH_DIM = MAX_SENT_LEN
 
@@ -194,7 +193,7 @@ def main(Path_To_data):
                                   X_train_polarity, X_val, X_val_polarity, EMBEDDING_DIM, SIGMOID_DIM, BATCH_SIZE, N_EPOCHS)
     X_TANH_model = build_model('tanh', embeddings_matrix, X_train_tokenizer, X_train,
                                X_train_polarity, X_val, X_val_polarity, EMBEDDING_DIM, TANH_DIM, BATCH_SIZE, N_EPOCHS)
-
+    print(X_RELU_model.summary())
     score1, acc1 = X_RELU_model.evaluate(X_test, X_test_polarity,
                                          batch_size=BATCH_SIZE)
 
